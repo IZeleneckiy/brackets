@@ -1,26 +1,20 @@
 module.exports = function check(str, bracketsConfig) {
-    bracketsConfig = bracketsConfig.reduce((a, b) => a.concat(b));
+    bracketsConfig = bracketsConfig.reduce((a, b) => a.concat(b), ['', '']).reverse();
     let bracketsStack = [];
     for (let i = 0; i < str.length; i++) {
         let currentBracket = str[i];
-        let indexOfBracket = bracketsConfig.indexOf(currentBracket);
-        if (indexOfBracket % 2) {
-            if (bracketsStack.pop() !== bracketsConfig[indexOfBracket - 1]) {
-                return false;
-            }
+        let indexOfCurrentBracket = bracketsConfig.indexOf(currentBracket);
+        if (indexOfCurrentBracket % 2) { // если скобка открывающая
+            bracketsStack.push(currentBracket);
         } else {
-            if (currentBracket == bracketsConfig[indexOfBracket + 1]) {
-                if (bracketsStack.length > 0) {
-                    if (bracketsStack[bracketsStack.length - 1] != currentBracket) {
-                        if (bracketsStack.includes(currentBracket)) {
-                            return false;
-                        } else bracketsStack.push(currentBracket);
-                    } else bracketsStack.pop();
-                } else {
-                    bracketsStack.push(currentBracket);
-                }
+            if (bracketsStack[bracketsStack.length - 1] == bracketsConfig[indexOfCurrentBracket + 1]) { // если открывающая в стеке того же типа
+                bracketsStack.pop();
             } else {
-                bracketsStack.push(currentBracket);
+                if (bracketsConfig[indexOfCurrentBracket + 1] == currentBracket && !bracketsStack.includes(currentBracket)) { // если открывающая такая же как закрывающая и ее нет еще в стеке
+                    bracketsStack.push(currentBracket);
+                } else {
+                    return false;
+                }
             }
         }
     }
